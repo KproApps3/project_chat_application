@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import queryString from 'query-string';
 import io from "socket.io-client";
-
+import axios from 'axios';
 import TextContainer from '../TextContainer/TextContainer';
 import Messages from '../Messages/Messages';
 import InfoBar from '../InfoBar/InfoBar';
@@ -18,7 +18,10 @@ const Chat = ({ location }) => {
   const [room, setRoom] = useState('');
   const [users, setUsers] = useState('');
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState([]);
+  var [messages, setMessages] = useState([]);
+  const [post, setpost] = useState([]);
+  
+
 
   useEffect(() => {
     const { name, room } = queryString.parse(location.search);
@@ -33,6 +36,10 @@ const Chat = ({ location }) => {
         alert(error);
       }
     });
+
+
+ 
+
   }, [ENDPOINT, location.search]);
   
   useEffect(() => {
@@ -45,12 +52,60 @@ const Chat = ({ location }) => {
     });
 }, []);
 
+  
+
+
+
+
   const sendMessage = (event) => {
     event.preventDefault();
 
     if(message) {
-      socket.emit('sendMessage', message, () => setMessage(''));
+     var test = fetchMovies()
+      
+   
+    
+      // socket.emit('sendMessage', message, () => setMessage(''));
     }
+
+    async function fetchMovies() {
+
+
+      var bodyFormData = new FormData();
+      bodyFormData.append('receivex', 'How to report a problem with an article');
+      axios({
+        method: "post",
+        timeout: 200000,
+        url: "https://kproapps.pythonanywhere.com",
+        data: bodyFormData,
+        headers: { 'Accept': '/', 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET,HEAD,OPTIONS,POST,PUT',
+        'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'},
+      })
+      .then((response) => {
+        messages = response.data
+        setMessages(messages);
+        console.log(response);
+      });
+  //   try {
+  //     const fetchResponse = await fetch('https://kproapps.pythonanywhere.com', {
+  //       method: 'POST',
+  //       headers: { 'Accept': '/', 
+  //       'Content-Type': 'multipart/form-data',
+  //       'Access-Control-Allow-Origin': '*',
+  //       'Access-Control-Allow-Methods': 'GET,HEAD,OPTIONS,POST,PUT',
+  //       'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization'},
+  //       body: JSON.stringify({ receive: 'How to report a problem with an article' })
+	// });
+  //     const data = await fetchResponse.json();
+  //     return data;
+  // } catch (e) {
+  //     return e;
+  // } 
+    }
+
   }
 
   return (
